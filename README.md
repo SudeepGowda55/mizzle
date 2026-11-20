@@ -8,7 +8,10 @@ But just before anyone speaks, they take a quick breath in without noticing it. 
 
 It runs beside Zoom, Google Meet, Teams or any other call app, as a small floating pill. No call integration is needed.
 
-https://github.com/user-attachments/assets/1e4aa7b0-8c55-453d-969a-21cdc6d09182
+
+https://github.com/user-attachments/assets/a17e7fe2-2c7a-472c-b939-75793f1b9d88
+
+
 
 *2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy. Player not showing? [Watch the full-quality mp4](docs/mizzle-demo.mp4).*
 
