@@ -1,33 +1,123 @@
 # Intake
 
-On video calls, two people often start talking at the same moment because of call delay. But just before anyone speaks, they take a quick breath in without noticing. Intake reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells the others on the call that you're about to speak, before your voice reaches them.
+**Breathe in. They'll know.**
 
-Status: feasibility probe. It measures how fast the SDK's chest-breathing and talking signals arrive, and whether an inhale comes before speech.
+On video calls, two people often start talking at the same moment because of call delay. *"Sorry, you go." "No, you go."*
 
-## Setup
+But just before anyone speaks, they take a quick breath in without noticing it. Intake reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells everyone else on the call **"Sudeep is about to speak"**, before your voice reaches them.
 
-Needs macOS on Apple Silicon, Linux (x64/arm64) or Windows x64, plus Node 20+.
+It runs beside Zoom, Google Meet, Teams or any other call app, as a small floating pill. No call integration is needed.
 
-```bash
-npm install
-echo "SMARTSPECTRA_API_KEY=your_key" > .env   # free key: https://physiology.presagetech.com/auth/register
+## Download
+
+**[⬇ Download Intake for Mac (Apple Silicon)](https://github.com/SudeepGowda55/intake/releases/latest/download/Intake-mac-arm64.dmg)** · 151 MB · [all releases](https://github.com/SudeepGowda55/intake/releases)
+
+1. Open the `.dmg` and drag **Intake** into **Applications**.
+2. Open Intake. The app isn't notarized by Apple, so the first launch is blocked once. To allow it:
+   - **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to "Intake was blocked", or
+   - in Terminal: `xattr -dr com.apple.quarantine /Applications/Intake.app`
+3. Click **Allow** when macOS asks for camera access.
+
+Requirements: a Mac with Apple Silicon (M1 or newer) and an internet connection. Nothing else to install, and no account or API key needed.
+
+## How to use it
+
+1. **Agree** to the camera notice, then type your name.
+2. One person clicks **Start room** and sends the room code (e.g. `maple-otter-42`) to the others on the call.
+3. Everyone else pastes the code and clicks **Join**.
+4. Sit facing the camera with your **face and upper chest in view**, in even light. For about 10 seconds Intake shows *learning your breathing* while it learns your normal breaths.
+5. Click **Float over my call**. A small pill stays on top of your call window:
+   - 🟠 **"Asha is about to speak"**: hold on, someone is about to talk
+   - ⚫ **"Asha is speaking"**
+   - **"Floor is open"**: go ahead
+
+The main window shows your live breathing line, with the moments you were flagged "about to speak" (orange) and speaking (grey). It also shows how well the detector is doing on **you**, measured live:
+
+- **ms head start**: how long before your voice the warning went out (median)
+- **turns warned**: how many times you started talking that were flagged in advance
+- **warnings that came true**: how many flags were followed by you actually speaking
+
+Every number comes from your own session. The detector checks each warning against the SDK's own talking detector.
+
+## How it works
+
+```
+webcam ─▶ SmartSpectra SDK (on-device) ─▶ chest breathing trace + talking flag
+                                              │
+                                              ▼
+                                   Detector (src/detector.js)
+              learns how steep your resting inhales are, then flags an inhale
+              that is clearly steeper while you're silent ─▶ quiet / about / speaking
+                                              │
+                                              ▼
+                     Room (src/room.js) ── public MQTT relays ──▶ everyone's pill
 ```
 
-## Run the probe
+- **The signal:** people inhale quickly right before they speak. Speech research has measured this with chest belts (e.g. Torreira et al., 2015, *Breathing for answering*). Intake does it with a plain webcam.
+- **Detector:** compares how fast each inhale rises against the median of your recent resting inhales (`sensitivity` = 1.5×). It stays silent until it has seen 3 resting breaths. It works out the trace's direction itself from the fact that you breathe *out* while talking, and ignores catch-up breaths for 0.8 s after you stop talking.
+- **Self-scoring:** a warning followed by speech within 2 s is a hit, and the time between them is the head start. A warning with no speech is a false alarm. A turn with no warning is a miss.
+- **Room:** each participant publishes `{id, name, state}` on the topic `intake/v1/<room-code>` on **two public MQTT relays at once** (EMQX and HiveMQ). Two people can never end up on different relays, and the room keeps working while either relay is up. Peers that go silent for 7 s drop out.
 
-Sit with your face and upper chest in the camera frame, in even light.
+### Measured so far
 
-```bash
-npm run probe       # talk normally, Ctrl+C to stop
-npm run questions   # the Mac asks 20 spoken questions; answer each out loud
-```
-
-Each run writes `probe-<time>.jsonl` with one line per chest, abdomen or talking sample. Each line holds the capture timestamp and the time it reached the app, both in µs since the epoch.
+| What | Result | Source |
+|---|---|---|
+| Delay of the chest-breathing samples | **39 ms** median, 69 ms at p90 | 62 s live probe, 1,857 samples |
+| Delay of the talking samples | **~45 ms** median | same probe, 2,500+ samples |
+| Relay: state change → other laptop | **~0.2 s** | two-client relay test |
+| Inhale before speech | inhale peaked **~0.35 s** before speaking in 4 clean turns | first probe. A small sample, so treat it as a lead, not proof. The app's live stats are the real measurement. |
 
 ## Consent and data handling
 
-- The camera starts only when you run the command yourself. Nothing runs in the background.
-- All measurement happens on your machine. No video or vitals are uploaded. The SDK contacts Presage only to validate the API key.
-- Presage SDK telemetry is turned off (`enableTelemetry: false`).
-- The recorded `.jsonl` files stay on your disk and are git-ignored. Delete them anytime.
-- This is not a medical device and makes no health claims.
+- **Consent first.** The camera never turns on until you tick the consent box and join a room. Leaving the room turns it off.
+- **On-device.** Video frames and breathing measurements are processed on your Mac by the SmartSpectra SDK. Nothing is recorded, saved to disk or uploaded.
+- **What leaves your Mac:** only your display name, a random session id and one word of status (`quiet`, `about`, `speaking`). These go to the people using the same room code, through two free public MQTT relays (broker.emqx.io and broker.hivemq.com). These relays are public, so anyone who knows or guesses your room code could see those three fields. No video, vitals or breathing values are ever sent.
+- **SDK contact.** The SDK contacts Presage only to validate the API key. **Presage telemetry is turned off** (`enableTelemetry: false`).
+- **Retention:** none. Nothing is stored, so there's nothing to delete.
+- **Not medical.** Intake reads breathing rhythm for conversation turn-taking only. It makes no health claims and isn't a medical device.
+- **Covert monitoring isn't possible.** Each person runs Intake on their own machine, with their own camera and consent. It never analyses anyone else's video.
+
+## Build from source
+
+Needs Node 20+ and macOS on Apple Silicon (the SDK also supports Linux and Windows x64; the app hasn't been packaged for them yet).
+
+```bash
+git clone https://github.com/SudeepGowda55/intake && cd intake
+npm install
+echo "SMARTSPECTRA_API_KEY=your_key" > .env   # free key: https://physiology.presagetech.com/auth/register
+npm start                                    # run the app
+npm test                                     # detector tests
+npm run dist                                 # build dist/Intake-1.0.0-arm64.dmg
+```
+
+`npm start` and `npm run dist` write your key into `app-config.json` (git-ignored), which ships inside the app. That's how the release runs without setup.
+
+> Running from VS Code's terminal? VS Code sets `ELECTRON_RUN_AS_NODE=1`, which makes Electron start as plain Node. Use `env -u ELECTRON_RUN_AS_NODE npm start`.
+
+### Research tools
+
+```bash
+npm run probe                          # log raw chest + talking samples with timestamps to probe-<time>.jsonl
+npm run questions                      # same, while the Mac asks 20 spoken questions to capture speech onsets
+npm run replay probe-<time>.jsonl 1.5  # replay a recording through the detector at a given sensitivity
+```
+
+## Project layout
+
+| Path | What it is |
+|---|---|
+| `main.js` | Electron main process: camera + SDK, detector, room, windows |
+| `preload.cjs` | the safe bridge between the windows and the main process |
+| `src/detector.js` | pre-speech inhale detector with live self-scoring |
+| `src/room.js` | room codes and state sharing over two MQTT relays |
+| `ui/` | main window (consent, room, live breathing) and the floating pill |
+| `probe.mjs`, `scripts/` | latency probe, replay tool, key config writer |
+| `test/` | detector tests (`npm test`) |
+
+## Built with
+
+[Presage SmartSpectra SDK](https://smartspectra.presagetech.com) 3.5.0 (Node) · Electron 38 · MQTT.js · electron-builder
+
+## License
+
+MIT
