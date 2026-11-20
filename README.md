@@ -2,6 +2,10 @@
 
 **Breathe in. They'll know.**
 
+[![Intake launch video (20 s)](docs/intake-launch.jpg)](https://github.com/SudeepGowda55/intake/releases/download/v1.0.0/intake-launch.mp4)
+
+*▶ Click to watch the 20-second launch video ([mp4 in the repo](docs/intake-launch.mp4)).*
+
 On video calls, two people often start talking at the same moment because of call delay. *"Sorry, you go." "No, you go."*
 
 But just before anyone speaks, they take a quick breath in without noticing it. Intake reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells everyone else on the call **"Sudeep is about to speak"**, before your voice reaches them.

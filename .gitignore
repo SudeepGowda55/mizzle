@@ -3,3 +3,4 @@ node_modules/
 probe-*.jsonl
 app-config.json
 dist/
+brag-output/
