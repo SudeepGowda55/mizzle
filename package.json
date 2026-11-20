@@ -6,7 +6,8 @@
     "probe": "node --env-file=.env probe.mjs",
     "questions": "QUESTIONS=1 node --env-file=.env probe.mjs",
     "test": "node --test test/*.test.js",
-    "replay": "node scripts/replay.mjs"
+    "replay": "node scripts/replay.mjs",
+    "start": "electron ."
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,6 @@
     "@smartspectra/node-sdk": "3.5.0",
     "electron": "38.2.0",
     "mqtt": "5.16.1"
-  }
+  },
+  "main": "main.js"
 }
