@@ -22,7 +22,7 @@ function createMain() {
     width: 1040, height: 700, minWidth: 820, minHeight: 600,
     backgroundColor: '#e4e9e2',
     titleBarStyle: 'hiddenInset',
-    title: 'Intake',
+    title: 'Mizzle',
     webPreferences: { preload: path.join(dir, 'preload.cjs') },
   });
   main.loadFile(path.join(dir, 'ui', 'index.html'));

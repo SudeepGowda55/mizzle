@@ -16,7 +16,7 @@ export const cleanCode = (code) => String(code).toLowerCase().replace(/[^a-z0-9-
 
 export function joinRoom({ code, name, onPeers, onStatus }) {
   const id = randomBytes(6).toString('hex');
-  const topic = `intake/v1/${cleanCode(code)}`;
+  const topic = `mizzle/v1/${cleanCode(code)}`;
   const peers = new Map(); // id -> {name, state, seen}
   let me = { id, name: String(name).slice(0, 24), state: 'quiet' };
   let left = false;
@@ -31,7 +31,7 @@ export function joinRoom({ code, name, onPeers, onStatus }) {
   // and the room keeps working while either relay is up. Peers are de-duplicated by id.
   const clients = BROKERS.map((url) => {
     const c = mqtt.connect(url, {
-      clientId: `intake-${id}-${new URL(url).hostname}`,
+      clientId: `mizzle-${id}-${new URL(url).hostname}`,
       connectTimeout: 6000,
       reconnectPeriod: 3000,
       will: { topic, payload: JSON.stringify({ id, left: true }) },

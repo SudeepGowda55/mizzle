@@ -12,6 +12,6 @@ function render() {
   dots.innerHTML = peers.map((p) => `<i data-state="${p.state}"></i>`).join('');
 }
 
-window.intake.on('peers', (list) => { peers = list; render(); });
-window.intake.on('session', (s) => { if (!s) { peers = []; render(); } });
+window.mizzle.on('peers', (list) => { peers = list; render(); });
+window.mizzle.on('session', (s) => { if (!s) { peers = []; render(); } });
 render();

@@ -1,5 +1,5 @@
 {
-  "name": "intake",
+  "name": "mizzle",
   "version": "1.0.0",
   "description": "Shows others on a video call that you're about to speak, from the breath you take before talking (Presage SmartSpectra)",
   "scripts": {
@@ -27,10 +27,10 @@
     "electron": "38.2.0",
     "electron-builder": "26.18.0"
   },
-  "productName": "Intake",
+  "productName": "Mizzle",
   "build": {
-    "appId": "dev.sudeepgowda.intake",
-    "productName": "Intake",
+    "appId": "dev.sudeepgowda.mizzle",
+    "productName": "Mizzle",
     "asar": false,
     "files": [
       "main.js",
@@ -55,11 +55,12 @@
       "identity": "-",
       "hardenedRuntime": false,
       "extendInfo": {
-        "NSCameraUsageDescription": "Intake reads your breathing from the camera, on this Mac, to let your call know you are about to speak. Video never leaves your computer."
+        "NSCameraUsageDescription": "Mizzle reads your breathing from the camera, on this Mac, to let your call know you are about to speak. Video never leaves your computer."
       }
     },
     "dmg": {
-      "title": "Intake"
+      "title": "Mizzle"
     }
-  }
+  },
+  "private": true
 }

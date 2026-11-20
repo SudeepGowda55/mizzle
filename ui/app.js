@@ -1,4 +1,4 @@
-const api = window.intake;
+const api = window.mizzle;
 const $ = (id) => document.getElementById(id);
 const LABEL = { quiet: 'quiet', about: 'about to speak', speaking: 'speaking' };
 
@@ -38,7 +38,7 @@ async function enter(code) {
   const res = await api.start({ name, code: code.toLowerCase() });
   $('startRoom').disabled = $('joinRoom').disabled = false;
   if (res?.error === 'camera-denied') {
-    $('joinErr').innerHTML = 'Intake needs your camera. Allow it in System Settings, then try again.<button class="ghost sm" id="openCam">Open settings</button>';
+    $('joinErr').innerHTML = 'Mizzle needs your camera. Allow it in System Settings, then try again.<button class="ghost sm" id="openCam">Open settings</button>';
     $('openCam').addEventListener('click', () => api.openCameraSettings());
     return;
   }
