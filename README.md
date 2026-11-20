@@ -1,25 +1,25 @@
-# Intake
+# Mizzle
 
 **Breathe in. They'll know.**
 
-[![Intake launch video (20 s)](docs/intake-launch.jpg)](https://github.com/SudeepGowda55/intake/releases/download/v1.0.0/intake-launch.mp4)
+[![Mizzle demo video (2 min)](docs/mizzle-demo.jpg)](https://github.com/SudeepGowda55/mizzle/releases/latest/download/mizzle-demo.mp4)
 
-*▶ Click to watch the 20-second launch video ([mp4 in the repo](docs/intake-launch.mp4)).*
+*▶ Click to watch the 2-minute demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy ([mp4 in the repo](docs/mizzle-demo.mp4)).*
 
 On video calls, two people often start talking at the same moment because of call delay. *"Sorry, you go." "No, you go."*
 
-But just before anyone speaks, they take a quick breath in without noticing it. Intake reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells everyone else on the call **"Sudeep is about to speak"**, before your voice reaches them.
+But just before anyone speaks, they take a quick breath in without noticing it. Mizzle reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells everyone else on the call **"Sudeep is about to speak"**, before your voice reaches them.
 
 It runs beside Zoom, Google Meet, Teams or any other call app, as a small floating pill. No call integration is needed.
 
 ## Download
 
-**[⬇ Download Intake for Mac (Apple Silicon)](https://github.com/SudeepGowda55/intake/releases/latest/download/Intake-mac-arm64.dmg)** · 151 MB · [all releases](https://github.com/SudeepGowda55/intake/releases)
+**[⬇ Download Mizzle for Mac (Apple Silicon)](https://github.com/SudeepGowda55/mizzle/releases/latest/download/Mizzle-mac-arm64.dmg)** · 151 MB · [all releases](https://github.com/SudeepGowda55/mizzle/releases)
 
-1. Open the `.dmg` and drag **Intake** into **Applications**.
-2. Open Intake. The app isn't notarized by Apple, so the first launch is blocked once. To allow it:
-   - **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to "Intake was blocked", or
-   - in Terminal: `xattr -dr com.apple.quarantine /Applications/Intake.app`
+1. Open the `.dmg` and drag **Mizzle** into **Applications**.
+2. Open Mizzle. The app isn't notarized by Apple, so the first launch is blocked once. To allow it:
+   - **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to "Mizzle was blocked", or
+   - in Terminal: `xattr -dr com.apple.quarantine /Applications/Mizzle.app`
 3. Click **Allow** when macOS asks for camera access.
 
 Requirements: a Mac with Apple Silicon (M1 or newer) and an internet connection. Nothing else to install, and no account or API key needed.
@@ -29,10 +29,10 @@ Requirements: a Mac with Apple Silicon (M1 or newer) and an internet connection.
 1. **Agree** to the camera notice, then type your name.
 2. One person clicks **Start room** and sends the room code (e.g. `maple-otter-42`) to the others on the call.
 3. Everyone else pastes the code and clicks **Join**.
-4. Sit facing the camera with your **face and upper chest in view**, in even light. For about 10 seconds Intake shows *learning your breathing* while it learns your normal breaths.
+4. Sit facing the camera with your **face and upper chest in view**, in even light. For about 10 seconds Mizzle shows *learning your breathing* while it learns your normal breaths.
 5. Click **Float over my call**. A small pill stays on top of your call window:
-   - 🟠 **"Asha is about to speak"**: hold on, someone is about to talk
-   - ⚫ **"Asha is speaking"**
+   - 🟠 **"Manvith is about to speak"**: hold on, someone is about to talk
+   - ⚫ **"Manvith is speaking"**
    - **"Floor is open"**: go ahead
 
 The main window shows your live breathing line, with the moments you were flagged "about to speak" (orange) and speaking (grey). It also shows how well the detector is doing on **you**, measured live:
@@ -57,10 +57,10 @@ webcam ─▶ SmartSpectra SDK (on-device) ─▶ chest breathing trace + talkin
                      Room (src/room.js) ── public MQTT relays ──▶ everyone's pill
 ```
 
-- **The signal:** people inhale quickly right before they speak. Speech research has measured this with chest belts (e.g. Torreira et al., 2015, *Breathing for answering*). Intake does it with a plain webcam.
+- **The signal:** people inhale quickly right before they speak. Speech research has measured this with chest belts (e.g. Torreira et al., 2015, *Breathing for answering*). Mizzle does it with a plain webcam.
 - **Detector:** compares how fast each inhale rises against the median of your recent resting inhales (`sensitivity` = 1.5×). It stays silent until it has seen 3 resting breaths. It works out the trace's direction itself from the fact that you breathe *out* while talking, and ignores catch-up breaths for 0.8 s after you stop talking.
 - **Self-scoring:** a warning followed by speech within 2 s is a hit, and the time between them is the head start. A warning with no speech is a false alarm. A turn with no warning is a miss.
-- **Room:** each participant publishes `{id, name, state}` on the topic `intake/v1/<room-code>` on **two public MQTT relays at once** (EMQX and HiveMQ). Two people can never end up on different relays, and the room keeps working while either relay is up. Peers that go silent for 7 s drop out.
+- **Room:** each participant publishes `{id, name, state}` on the topic `mizzle/v1/<room-code>` on **two public MQTT relays at once** (EMQX and HiveMQ). Two people can never end up on different relays, and the room keeps working while either relay is up. Peers that go silent for 7 s drop out.
 
 ### Measured so far
 
@@ -78,20 +78,20 @@ webcam ─▶ SmartSpectra SDK (on-device) ─▶ chest breathing trace + talkin
 - **What leaves your Mac:** only your display name, a random session id and one word of status (`quiet`, `about`, `speaking`). These go to the people using the same room code, through two free public MQTT relays (broker.emqx.io and broker.hivemq.com). These relays are public, so anyone who knows or guesses your room code could see those three fields. No video, vitals or breathing values are ever sent.
 - **SDK contact.** The SDK contacts Presage only to validate the API key. **Presage telemetry is turned off** (`enableTelemetry: false`).
 - **Retention:** none. Nothing is stored, so there's nothing to delete.
-- **Not medical.** Intake reads breathing rhythm for conversation turn-taking only. It makes no health claims and isn't a medical device.
-- **Covert monitoring isn't possible.** Each person runs Intake on their own machine, with their own camera and consent. It never analyses anyone else's video.
+- **Not medical.** Mizzle reads breathing rhythm for conversation turn-taking only. It makes no health claims and isn't a medical device.
+- **Covert monitoring isn't possible.** Each person runs Mizzle on their own machine, with their own camera and consent. It never analyses anyone else's video.
 
 ## Build from source
 
 Needs Node 20+ and macOS on Apple Silicon (the SDK also supports Linux and Windows x64; the app hasn't been packaged for them yet).
 
 ```bash
-git clone https://github.com/SudeepGowda55/intake && cd intake
+git clone https://github.com/SudeepGowda55/mizzle && cd mizzle
 npm install
 echo "SMARTSPECTRA_API_KEY=your_key" > .env   # free key: https://physiology.presagetech.com/auth/register
 npm start                                    # run the app
 npm test                                     # detector tests
-npm run dist                                 # build dist/Intake-1.0.0-arm64.dmg
+npm run dist                                 # build dist/Mizzle-1.0.0-arm64.dmg
 ```
 
 `npm start` and `npm run dist` write your key into `app-config.json` (git-ignored), which ships inside the app. That's how the release runs without setup.
