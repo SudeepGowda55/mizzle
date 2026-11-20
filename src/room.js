@@ -19,30 +19,27 @@ export function joinRoom({ code, name, onPeers, onStatus }) {
   const topic = `intake/v1/${cleanCode(code)}`;
   const peers = new Map(); // id -> {name, state, seen}
   let me = { id, name: String(name).slice(0, 24), state: 'quiet' };
-  let client, brokerIx = 0, closed = false;
+  let left = false;
 
   const emit = () => {
     const now = Date.now();
     for (const [pid, p] of peers) if (now - p.seen > STALE) peers.delete(pid);
     onPeers([...peers.values()]);
   };
-  const send = () => client?.connected && client.publish(topic, JSON.stringify(me));
 
-  function connect() {
-    const url = BROKERS[brokerIx % BROKERS.length];
-    onStatus?.({ state: 'connecting', relay: new URL(url).hostname });
-    client = mqtt.connect(url, {
-      clientId: `intake-${id}-${brokerIx}`,
+  // Talk on every relay at once: two people can never end up on different relays,
+  // and the room keeps working while either relay is up. Peers are de-duplicated by id.
+  const clients = BROKERS.map((url) => {
+    const c = mqtt.connect(url, {
+      clientId: `intake-${id}-${new URL(url).hostname}`,
       connectTimeout: 6000,
-      reconnectPeriod: 0, // we handle failover ourselves
+      reconnectPeriod: 3000,
       will: { topic, payload: JSON.stringify({ id, left: true }) },
     });
-    client.on('connect', () => {
-      client.subscribe(topic);
-      onStatus?.({ state: 'connected', relay: new URL(url).hostname });
-      send();
-    });
-    client.on('message', (_t, buf) => {
+    c.on('connect', () => { c.subscribe(topic); c.publish(topic, JSON.stringify(me)); status(); });
+    c.on('close', status);
+    c.on('error', () => {}); // reconnects on its own; status() reports it
+    c.on('message', (_t, buf) => {
       let m;
       try { m = JSON.parse(buf.toString()); } catch { return; }
       if (!m || typeof m.id !== 'string' || m.id === id) return;
@@ -52,19 +49,16 @@ export function joinRoom({ code, name, onPeers, onStatus }) {
       }
       emit();
     });
-    const retry = () => {
-      if (closed) return;
-      client.removeAllListeners();
-      client.end(true);
-      brokerIx++;
-      onStatus?.({ state: 'retrying' });
-      setTimeout(connect, 1500);
-    };
-    client.on('close', retry);
-    client.on('error', retry);
-  }
+    return c;
+  });
 
-  connect();
+  function status() {
+    if (left) return;
+    const up = clients?.filter((c) => c.connected).map((c) => c.options.hostname) ?? [];
+    onStatus?.(up.length ? { state: 'connected', relay: up.join(' + ') } : { state: 'connecting' });
+  }
+  const send = () => { for (const c of clients) if (c.connected) c.publish(topic, JSON.stringify(me)); };
+  status();
   const beat = setInterval(() => { send(); emit(); }, HEARTBEAT);
 
   return {
@@ -75,10 +69,12 @@ export function joinRoom({ code, name, onPeers, onStatus }) {
       send();
     },
     leave() {
-      closed = true;
+      left = true;
       clearInterval(beat);
-      if (client?.connected) client.publish(topic, JSON.stringify({ id, left: true }));
-      client?.end();
+      for (const c of clients) {
+        if (c.connected) c.publish(topic, JSON.stringify({ id, left: true }));
+        c.end();
+      }
     },
   };
 }
