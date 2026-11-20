@@ -80,7 +80,7 @@ webcam ─▶ SmartSpectra SDK (on-device) ─▶ chest breathing trace + talkin
 - **On-device.** Video frames and breathing measurements are processed on your Mac by the SmartSpectra SDK. Nothing is recorded, saved to disk or uploaded.
 - **What leaves your Mac:** only your display name, a random session id and one word of status (`quiet`, `about`, `speaking`). These go to the people using the same room code, through two free public MQTT relays (broker.emqx.io and broker.hivemq.com). These relays are public, so anyone who knows or guesses your room code could see those three fields. No video, vitals or breathing values are ever sent.
 - **SDK contact.** The SDK contacts Presage only to validate the API key. **Presage telemetry is turned off** (`enableTelemetry: false`).
-- **Retention:** none. Nothing is stored, so there's nothing to delete.
+- **Retention:** no video, breathing data or statistics are stored. The only thing kept on your Mac is the display name you typed, so you don't have to retype it.
 - **Not medical.** Mizzle reads breathing rhythm for conversation turn-taking only. It makes no health claims and isn't a medical device.
 - **Covert monitoring isn't possible.** Each person runs Mizzle on their own machine, with their own camera and consent. It never analyses anyone else's video.
 
