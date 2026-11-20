@@ -78,6 +78,8 @@ api.on('relay', (s) => {
 });
 api.on('sdk-error', (e) => { $('hint').textContent = e.message; });
 api.on('stats', (s) => {
+  if (!s.ready && points.length && me.state === 'quiet') { $('selfWord').textContent = 'learning your breathing'; $('selfWord').dataset.state = 'idle'; }
+  else if (s.ready && $('selfWord').dataset.state === 'idle' && points.length) { $('selfWord').textContent = LABEL[me.state]; $('selfWord').dataset.state = me.state; }
   $('sLead').textContent = s.medianLeadMs ?? '–';
   $('sRecall').textContent = s.recall == null ? '–' : `${Math.round(s.recall * 100)}%`;
   $('sRecallSub').textContent = s.turns ? `of your turns were warned (${s.hits} of ${s.turns})` : 'of your turns were warned';

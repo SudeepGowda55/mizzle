@@ -15,7 +15,7 @@ const NEW_TURN_GAP = 1.0e6;  // speech after this much silence is a new turn
 export class Detector {
   constructor({ sensitivity = 1.5 } = {}) {
     this.sensitivity = sensitivity; // how many times steeper than a resting inhale
-    this.trace = [];                // [{t, x}] last ~3 s, polarity-corrected
+    this.trace = [];                // [{t, v}] last ~3 s
     this.polaritySum = 0;           // learned from speech: you breathe OUT while talking
     this.restSlopes = [];           // peak slopes of recent resting inhales
     this.curPeak = 0;               // steepest slope in the inhale in progress
@@ -30,23 +30,20 @@ export class Detector {
 
   get polarity() { return this.polaritySum > 0 ? -1 : 1; }
 
-  // Threshold for "clearly steeper than resting". Before we've seen resting breaths, use the
-  // trace's own spread so the first minute still works.
+  // Until we've seen a few resting breaths we don't know what "steeper than usual" means, so we
+  // stay silent (a live test fired twice in the first seconds with a guessed threshold).
+  get ready() { return this.restSlopes.length >= 3; }
+
+  // Threshold for "clearly steeper than resting".
   threshold() {
-    if (this.restSlopes.length >= 3) {
-      const s = [...this.restSlopes].sort((a, b) => a - b);
-      return s[s.length >> 1] * this.sensitivity;
-    }
-    const xs = this.trace.map((p) => p.x);
-    if (xs.length < 20) return Infinity;
-    const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
-    const sd = Math.sqrt(xs.reduce((a, b) => a + (b - mean) ** 2, 0) / xs.length);
-    return (sd * 2.5) / (WINDOW / 1e6); // a rise of 2.5 sd within one window
+    if (!this.ready) return Infinity;
+    const s = [...this.restSlopes].sort((a, b) => a - b);
+    return s[s.length >> 1] * this.sensitivity;
   }
 
   chest(t, v) {
     const raw = this.trace.at(-1);
-    this.trace.push({ t, v, x: v * this.polarity });
+    this.trace.push({ t, v });
     while (this.trace.length && this.trace[0].t < t - 3e6) this.trace.shift();
     const old = this.trace.find((p) => p.t >= t - WINDOW);
     if (!old || old.t === t) return this.tick(t);

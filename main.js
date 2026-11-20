@@ -7,7 +7,7 @@ import { Detector } from './src/detector.js';
 import { joinRoom, newRoomCode } from './src/room.js';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-let main, pill, sdk, detector, room, session = null;
+let main, pill, sdk, detector, room, timer, session = null; // session is sent to windows, so plain data only
 
 // The key is baked into release builds by scripts/write-config.mjs (never committed).
 function apiKey() {
@@ -102,9 +102,9 @@ async function start({ name, code }) {
   sdk.on('error', (code, message) => send('sdk-error', { code, message }));
 
   // batch trace points to the UI ~20x/s instead of per sample
-  session.timer = setInterval(() => {
+  timer = setInterval(() => {
     if (traceBuf.length) { send('trace', traceBuf); traceBuf = []; }
-    send('stats', { ...detector.summary(), polarity: detector.polarity });
+    send('stats', { ...detector.summary(), ready: detector.ready });
   }, 50);
 
   try {
@@ -119,7 +119,7 @@ async function start({ name, code }) {
 }
 
 async function stop() {
-  if (session?.timer) clearInterval(session.timer);
+  clearInterval(timer);
   room?.leave(); room = null;
   const s = sdk; sdk = null;
   if (s) { try { await s.stopAsync(); } catch {} try { await s.destroy(); } catch {} }
