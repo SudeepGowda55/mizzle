@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'">
+  <title>Intake</title>
+  <link rel="stylesheet" href="../node_modules/@fontsource/gabarito/latin-700.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/gabarito/latin-900.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/atkinson-hyperlegible/latin-400.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/atkinson-hyperlegible/latin-700.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/space-mono/latin-400.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-screen="consent">
+  <header class="bar">
+    <span class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15c3 0 3-6 6-6s3 6 6 6 3-9 6-9"/></svg>intake</span>
+    <span id="relay" class="relay"></span>
+  </header>
+
+  <main>
+    <section id="consent" class="screen">
+      <h1 class="kin">Breathe in. They'll know.</h1>
+      <p class="lede">Right before you talk, you take a quick breath without noticing. Intake sees it through your webcam and tells everyone on the call you're about to speak, so you stop talking over each other.</p>
+      <ul class="facts">
+        <li><b>Stays on this laptop.</b> Video and breathing are processed here. Nothing is uploaded or saved.</li>
+        <li><b>Only a status leaves.</b> Your name and quiet / about to speak / speaking go to people in your room through a public relay.</li>
+        <li><b>Camera is on only in a room.</b> Leave the room and it switches off. Presage SDK telemetry is turned off.</li>
+        <li><b>Not medical.</b> It reads breathing rhythm for conversation, nothing about your health.</li>
+      </ul>
+      <label class="agree"><input type="checkbox" id="agree"> I agree to turn on my camera for this</label>
+      <button id="toJoin" class="btn" disabled>Continue</button>
+    </section>
+
+    <section id="join" class="screen">
+      <h2 class="kin">Who's on the call?</h2>
+      <label class="field">Your name <input id="name" maxlength="24" placeholder="e.g. Manvith" autocomplete="off"></label>
+      <div class="cards">
+        <div class="card">
+          <span class="label">Start a room</span>
+          <code id="myCode" class="code"></code>
+          <p class="small">Send this code to the others on your call.</p>
+          <div class="row"><button id="startRoom" class="btn">Start room</button><button id="newCode" class="ghost">New code</button></div>
+        </div>
+        <div class="card">
+          <span class="label">Join a room</span>
+          <input id="joinCode" class="code-input" placeholder="maple-otter-42" autocomplete="off" spellcheck="false">
+          <p class="small">Paste the code someone sent you.</p>
+          <div class="row"><button id="joinRoom" class="btn">Join</button></div>
+        </div>
+      </div>
+      <p id="joinErr" class="err" role="alert"></p>
+    </section>
+
+    <section id="live" class="screen">
+      <div class="stage">
+        <div class="status">
+          <span id="selfWord" class="self" data-state="quiet">starting camera</span>
+          <span id="hint" class="hint"></span>
+        </div>
+        <canvas id="wave" aria-label="Your live breathing trace, with warnings and speech marked"></canvas>
+        <div class="legend">
+          <span><i class="sw line"></i>your breathing</span>
+          <span><i class="sw about"></i>about to speak</span>
+          <span><i class="sw speaking"></i>speaking</span>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="roombox"><span class="label">Room</span><code id="roomCode" class="code"></code><button id="copy" class="ghost sm">Copy</button></div>
+        <ul id="people" class="people" aria-live="polite"></ul>
+        <div class="stats">
+          <div><b id="sLead">–</b><span>ms head start, median</span></div>
+          <div><b id="sRecall">–</b><span id="sRecallSub">of your turns were warned</span></div>
+          <div><b id="sPrec">–</b><span id="sPrecSub">of warnings came true</span></div>
+        </div>
+        <button id="pillBtn" class="btn">Float over my call</button>
+        <button id="leave" class="ghost">Leave room</button>
+      </aside>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
