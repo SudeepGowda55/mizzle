@@ -2,15 +2,15 @@
 
 **Breathe in. They'll know.**
 
-https://github.com/user-attachments/assets/1e4aa7b0-8c55-453d-969a-21cdc6d09182
-
-*2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy. Player not showing? [Watch the full-quality mp4](docs/mizzle-demo.mp4).*
-
 On video calls, two people often start talking at the same moment because of call delay. *"Sorry, you go." "No, you go."*
 
 But just before anyone speaks, they take a quick breath in without noticing it. Mizzle reads that breath from your webcam with the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/docs/nodejs) and tells everyone else on the call **"Sudeep is about to speak"**, before your voice reaches them.
 
 It runs beside Zoom, Google Meet, Teams or any other call app, as a small floating pill. No call integration is needed.
+
+https://github.com/user-attachments/assets/1e4aa7b0-8c55-453d-969a-21cdc6d09182
+
+*2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy. Player not showing? [Watch the full-quality mp4](docs/mizzle-demo.mp4).*
 
 ## Download
 
