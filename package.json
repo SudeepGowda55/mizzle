@@ -1,0 +1,17 @@
+{
+  "name": "intake",
+  "version": "1.0.0",
+  "description": "Shows others on a video call that you're about to speak, from the breath you take before talking (Presage SmartSpectra)",
+  "scripts": {
+    "probe": "node --env-file=.env probe.mjs",
+    "questions": "QUESTIONS=1 node --env-file=.env probe.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@smartspectra/node-sdk": "3.5.0",
+    "electron": "38.2.0"
+  }
+}
