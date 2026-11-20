@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'">
+  <title>Intake pill</title>
+  <link rel="stylesheet" href="../node_modules/@fontsource/gabarito/latin-700.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/space-mono/latin-400.css">
+  <style>
+    html, body { margin: 0; background: transparent; overflow: hidden; }
+    .pill {
+      -webkit-app-region: drag; margin: 10px; padding: 12px 16px; border-radius: 999px;
+      background: #102a22; color: #f3f5f1; font: 700 15px 'Gabarito', system-ui;
+      display: flex; align-items: center; gap: 12px; box-shadow: 0 6px 20px rgba(16, 42, 34, .35);
+      transition: background .25s ease, color .25s ease, transform .25s cubic-bezier(.2,.9,.25,1.3);
+    }
+    .pill[data-state="about"] { background: #f2a20c; color: #102a22; transform: scale(1.04); }
+    .pill[data-state="speaking"] { background: #f3f5f1; color: #102a22; }
+    .breath { width: 14px; height: 14px; border-radius: 50%; background: currentColor; flex: none; opacity: .9; }
+    .pill[data-state="about"] .breath { animation: inhale .8s ease-in-out infinite alternate; }
+    @keyframes inhale { from { transform: scale(.7); } to { transform: scale(1.25); } }
+    .text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dots { display: flex; gap: 4px; }
+    .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid currentColor; opacity: .7; }
+    .dots i[data-state="about"] { background: #f2a20c; border-color: #f2a20c; opacity: 1; }
+    .dots i[data-state="speaking"] { background: currentColor; opacity: 1; }
+    .pill[data-state="about"] .dots i[data-state="about"] { background: #102a22; border-color: #102a22; }
+    @media (prefers-reduced-motion: reduce) { .pill, .breath { animation: none !important; transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="pill" id="pill" data-state="quiet" role="status" aria-live="assertive">
+    <span class="breath"></span><span class="text" id="text">Waiting for others…</span><span class="dots" id="dots"></span>
+  </div>
+  <script src="pill.js"></script>
+</body>
+</html>
