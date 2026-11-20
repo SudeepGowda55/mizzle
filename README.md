@@ -2,13 +2,9 @@
 
 **Breathe in. They'll know.**
 
-[![Mizzle demo video (2 min)](docs/mizzle-demo.jpg)](https://github.com/SudeepGowda55/mizzle/releases/latest/download/mizzle-demo.mp4)
-
-*▶ Click to watch the 2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy ([mp4 in the repo](docs/mizzle-demo.mp4)).*
-
-
 https://github.com/user-attachments/assets/1e4aa7b0-8c55-453d-969a-21cdc6d09182
 
+*2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy. Player not showing? [Watch the full-quality mp4](docs/mizzle-demo.mp4).*
 
 On video calls, two people often start talking at the same moment because of call delay. *"Sorry, you go." "No, you go."*
 
