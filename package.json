@@ -1,6 +1,6 @@
 {
   "name": "mizzle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Shows others on a video call that you're about to speak, from the breath you take before talking (Presage SmartSpectra)",
   "scripts": {
     "probe": "node --env-file=.env probe.mjs",

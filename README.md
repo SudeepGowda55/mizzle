@@ -91,7 +91,7 @@ npm install
 echo "SMARTSPECTRA_API_KEY=your_key" > .env   # free key: https://physiology.presagetech.com/auth/register
 npm start                                    # run the app
 npm test                                     # detector tests
-npm run dist                                 # build dist/Mizzle-1.0.0-arm64.dmg
+npm run dist                                 # build dist/Mizzle-1.1.0-arm64.dmg
 ```
 
 `npm start` and `npm run dist` write your key into `app-config.json` (git-ignored), which ships inside the app. That's how the release runs without setup.
