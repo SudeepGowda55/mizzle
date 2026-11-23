@@ -13,9 +13,13 @@ https://github.com/user-attachments/assets/a17e7fe2-2c7a-472c-b939-75793f1b9d88
 
 
 
-*2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy. Player not showing? [Watch the full-quality mp4](docs/mizzle-demo.mp4).*
+*2-minute narrated demo: install, consent, room, live breathing, the floating pill, self-scoring and privacy.*
 
-**Live recording, unedited (1:49):** [docs/mizzle-live.mp4](docs/mizzle-live.mp4). The release build on a MacBook with the real Presage signal: it learns the breathing, switches between quiet and speaking, and once turns to "about to speak" before the first word, a warning that came true with a 1.47 s head start. In this take 1 of 9 turns was warned, and the app shows that count on screen. The narrated demo above uses labelled simulated data; this one does not.
+**Live recording, unedited (1:49):**
+
+https://github.com/user-attachments/assets/d696843a-ab32-44fc-8bcf-7b7d60c6560b
+
+The release build on a MacBook with the real Presage signal: it learns the breathing, switches between quiet and speaking, and once turns to "about to speak" before the first word, a warning that came true with a 1.47 s head start. In this take 1 of 9 turns was warned, and the app shows that count on screen. The narrated demo above uses labelled simulated data; this one does not.
 
 ## Download
 
